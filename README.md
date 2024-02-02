@@ -1,5 +1,5 @@
 
-> # *Rest API*
+# *Rest API*
 <details>
 <summary>API</summary>
 API란? 
@@ -70,7 +70,7 @@ https://late90.tistory.com/353
 </details>
 <br/>
 
-> # *grpahQL*
+ # *grpahQL*
 <details>
 <summary>grpahQL 이란?</summary>
 
@@ -141,9 +141,9 @@ under-fetching이란 한번의 url 요청으로 필요한 모든 데이터 요�
 
 <br/>
 
-> # *GraphQL API - Apollo Server*
+# *GraphQL API - Apollo Server*
 
-## 프로젝트 세팅
+> ## 프로젝트 세팅
  - 노드 프로젝트 초기화 
     ```
     > npm init -y
