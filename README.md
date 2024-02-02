@@ -1,5 +1,5 @@
 
-## `Rest API`
+> # *Rest API*
 <details>
 <summary>API</summary>
 API란? 
@@ -68,7 +68,9 @@ https://mokpo.tistory.com/202
 https://late90.tistory.com/353
 
 </details>
-## `grpahQL`
+<br/>
+
+> # *grpahQL*
 <details>
 <summary>grpahQL 이란?</summary>
 
@@ -85,49 +87,99 @@ RestAPI는 아주 큰 문제를 두가지 가지고 있다.
 첫번째는 over-fetching이고 두번째는 under-fetching이다.
 GraphQL API는 RestAPI의 두 문제를 해결하는데 도움을 준다.
 </details>
+<details>
+<summary>over-fetching</summary>
 
+over-fetching이란, 내가 사용하지 않는 데이터라도 정형화된 틀로 제공되는 모든 data를 받는다는것을 의미한다.    
+즉, 특정 api에서 내가 필요한 데이터 이상의 데이터를 받게 된다.    
+정형화 된 틀의 데이터 양식(JSON)으로 내보내는 내가 사용하지 않는 데이터를 포함한 모든 데이터를 받게된다는 것이다.   
+예를들어 나는 title 데이터만 출력하는 기능을 만들고 싶어서 RestAPI로 데이터를 조회했는데, title뿐만 아니라 title을 포함한 25개의 연관 데이터를 받게 된다는 것이다.    
+이는 해당 데이터들을 제공하는 Backend 서버나 DataBase에서 필요 이상의 기회비용이 발생하는것을 의미한다.   
+또한 backend에서 frontend로 전송하는 데이터량이 많아진것 이므로 전송이 느릴수 있다.   
+GrpahQL은 URL로 data를 즉시 받지 않고 필요한 data만을 요청한다.   
+GraphQL Query를 API에 보내면 정확히 요청한 것만 받는다.   
 
-# GraphQL API - Apollo Server
-
-# 프로젝트 세팅
-
-## 셋업
-노드 프로젝트 초기화 
-```
-> npm init -y
-```
-
-Apollo Server, GraphQL 설치
-```
-> npm i apollo-server graphql
-```
-
-nodemon 설치 (devDependencies)
-```
-> npm i nodemon -D
-```
-
-## package.json 수정
-
-```json
-"scripts": {
-  // "test": "echo \"Error: no test specified\" && exit 1" //삭제한다.
-  "dev" : "nodemon server.js" //추가한다.
+### `GraphQL Query`
+```graphql
+{
+  hello: {
+    name
+    height
+    mass
+  }
 }
 ```
-npm run dev 명령어로 nodemon을 실행하면   
-타겟으로 적어둔 server.js의 내용을 변경하고 저장할 때마다   
-nodemon이 서버를 재시작 시켜준다.
-
-import문 사용을 위한 설정 추가
+### `Response JSON`
 ```json
-  "devDependencies": {
-    "nodemon": "^3.0.3"
-  },
-  "type" : "module" // 최 하단에 추가한다.
+{
+  "hello": {
+    "name": "Luke Skywaler",
+    "height": "1.72",
+    "mass": "77",
+  }
+}
 ```
 
-```js
-const {ApolloServer, gql} = require("apollo-ser ver") // 이 방식에서 (여전히 사용 가능)
-import {ApolloServer, gql} from "apollo-server" // 이 방식으로 사용할 수 있게 된다
-```
+위의 GraphQL Query를 API에 요청한다면 Response JSON 형태의 데이터를 반환받게 된다.    
+json의 hello속성의 객체중 name, height, mass 속성 데이터만 뽑아 그 형태를 유지하여 받게 된다.
+
+</details>
+
+<details>
+<summary>under-fetching</summary>
+
+under-fetching이란 한번의 url 요청으로 필요한 모든 데이터 요청을 처리하지 못하는것을 의미한다.    
+
+예를들어 특정 영화의 제목과 장르 정보를 가져오려고 하는데, 해당 API는 영화의 제목과 장르에 대한 분류번호를 제공한다.    
+이때 장르에 대한 명확한 단어를 얻기 위해서는 해당 분류번호를 가지고 새로운 API에 각 분류번호에 해당하는 장르 제목을 리소스로 요청하거나,    
+분류번호에 해당하는 장르제목 리스트 데이터 리소스를 반환받아 백엔드 서버 내부적으로 일치하는 데이터를 검증하여 처리해야한다.   
+만약 첫번째만 이라면 단순히 under-fetching인데 두번째 경우라면 under-fetching뿐만 아니라 over-fetching 문제도 발생하게 된다.   
+(필요한 장르번호에 해당하는 리소스만 요청하는 것이 아닌 필요없는 모든 장르를 다 가져오기 때문...)   
+
+
+</details>
+
+<br/>
+
+> # *GraphQL API - Apollo Server*
+
+## 프로젝트 세팅
+ - 노드 프로젝트 초기화 
+    ```
+    > npm init -y
+    ```
+
+ - Apollo Server, GraphQL 설치
+    ```
+    > npm i apollo-server graphql
+    ```
+
+  - nodemon 설치 (devDependencies)
+    ```
+    > npm i nodemon -D
+    ```
+
+  - package.json 수정
+
+    ```json
+    "scripts": {
+      // "test": "echo \"Error: no test specified\" && exit 1" //삭제한다.
+      "dev" : "nodemon server.js" //추가한다.
+    }
+    ```
+    npm run dev 명령어로 nodemon을 실행하면   
+    타겟으로 적어둔 server.js의 내용을 변경하고 저장할 때마다   
+    nodemon이 서버를 재시작 시켜준다.
+
+    import문 사용을 위한 설정 추가
+    ```json
+      "devDependencies": {
+        "nodemon": "^3.0.3"
+      },
+      "type" : "module" // 최 하단에 추가한다.
+    ```
+
+    ```js
+    const {ApolloServer, gql} = require("apollo-ser ver") // 이 방식에서 (여전히 사용 가능)
+    import {ApolloServer, gql} from "apollo-server" // 이 방식으로 사용할 수 있게 된다
+    ```
