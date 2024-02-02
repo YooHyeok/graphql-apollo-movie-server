@@ -1,5 +1,5 @@
 
-## 개념 펼쳐보기
+## `Rest API`
 <details>
 <summary>API</summary>
 API란? 
