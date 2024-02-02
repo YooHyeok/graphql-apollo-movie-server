@@ -68,6 +68,23 @@ https://mokpo.tistory.com/202
 https://late90.tistory.com/353
 
 </details>
+## `grpahQL`
+<details>
+<summary>grpahQL 이란?</summary>
+
+GraphQL은 하나의 명세이다.    
+2012년 부터 FaceBook 모바일 어플리케이션이 GraphQL을 사용을 시작했다.   
+GraphQL Spec은 2015년 부터 오픈소스로 공개되었다.   
+명세는 어떻게 동작하는지 적혀있을 뿐이므로, 그것을 javascript로 최초로 구현한것이 GraphQL-js이다.   
+`GraphQL Spec`  
+https://github.com/graphql/graphql-spec   
+
+GraphQL API는 RestAPI에 대한 직접적인 해결책이다.
+
+RestAPI는 아주 큰 문제를 두가지 가지고 있다.    
+첫번째는 over-fetching이고 두번째는 under-fetching이다.
+GraphQL API는 RestAPI의 두 문제를 해결하는데 도움을 준다.
+</details>
 
 
 # GraphQL API - Apollo Server
