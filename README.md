@@ -235,3 +235,21 @@ type Tweet { # allTweets이 반환하는 사용자 지정 type이다.
 
 ## Custom Object Type
 사용자가 직접 타입을 지정한다.
+
+## Argument
+restAPI에서 어떠한 리소스를 요청할지에 대한 조건값이다
+ex) /api/v1/tweets/`:id`
+타입스크립트의 function형태와 비슷하다.
+Query의 request 필드에 괄호를 지정하고 그 안에 argument 이름과 타입을 지정해준다.
+
+```graphQL
+  type Query {
+    tweet(id: ID): Tweet
+  }
+```
+
+이렇게 하면 서버에서는 아래와 같이 출력해준다
+
+```typescript
+tweet(id: ID): Tweet
+```
