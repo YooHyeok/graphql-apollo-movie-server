@@ -14,7 +14,7 @@ const typeDefs = gql`
 
   type Query { # root type
     allTwwets: [Tweet] # Tweet 타입 형태의 List를 반환한다.
-    tweet: Tweet
+    tweet(id: ID): Tweet
   }
   
 ` //SDL :Schema Definition Language
