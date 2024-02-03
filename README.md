@@ -199,3 +199,39 @@ middleware를 추가해주기만 하면 된다.
 자체적인 studio로 graphQL api를 explore할 수 있게 해준다.
 graphQL API와 상호작용하는 grahpiQL와 비슷, 버튼도 더 많고 다크모드 등등을 지원한다
 
+## Root Type
+Query, Mutation, Subscription 등이 있다.
+쿼리, 변경, 실시간 데이터를 처리하는데 사용된다.
+```graphQL
+type Query {
+  # 요청할 데이터(필드)
+}
+```
+
+## Scalar Type
+graphQL에 내장되어있는 타입 종류중 하나이다.
+ - String : 문자열
+ - Int : 정수
+ - Boolean : 불린
+ - ID : id값임을 명시적으로 표현하기 위해 사용. 내부적으로는 String형태와 동일
+ - Float : 실수
+
+```graphql
+type User { # 사용자 지정 타입으로 데이터베이스의 관계에 따라 결정된다.
+    id: ID
+    username: String 
+  }
+type Tweet { # allTweets이 반환하는 사용자 지정 type이다.
+    id: ID #스칼라타입
+    text: String #스칼라타입
+    author: User #사용자지정타입
+  }
+
+  type Query { # root type
+    allTwwets: [Tweet] # Tweet 타입 형태의 List를 반환한다.
+    tweet: Tweet
+  }
+```
+
+## Custom Object Type
+사용자가 직접 타입을 지정한다.
