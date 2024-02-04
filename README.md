@@ -143,8 +143,12 @@ under-fetching이란 한번의 url 요청으로 필요한 모든 데이터 요�
 
 # *GraphQL API - Apollo Server*
 
-> ## 프로젝트 세팅
- - 노드 프로젝트 초기화 
+## `프로젝트 세팅`
+<details>
+  <summary>[ 세팅 상세보기 ]</summary>
+
+  　
+  - 노드 프로젝트 초기화 
     ```
     > npm init -y
     ```
@@ -154,13 +158,13 @@ under-fetching이란 한번의 url 요청으로 필요한 모든 데이터 요�
     > npm i apollo-server graphql
     ```
 
-  - nodemon 설치 (devDependencies)
+ - nodemon 설치 (devDependencies)
     ```
     > npm i nodemon -D
     ```
 
-  - package.json 수정
-
+ - package.json 수정    
+  `nodemon 실행 명령 script 설정`
     ```json
     "scripts": {
       // "test": "echo \"Error: no test specified\" && exit 1" //삭제한다.
@@ -171,7 +175,7 @@ under-fetching이란 한번의 url 요청으로 필요한 모든 데이터 요�
     타겟으로 적어둔 server.js의 내용을 변경하고 저장할 때마다   
     nodemon이 서버를 재시작 시켜준다.
 
-    import문 사용을 위한 설정 추가
+    `import문 사용을 위한 설정`
     ```json
       "devDependencies": {
         "nodemon": "^3.0.3"
@@ -183,6 +187,9 @@ under-fetching이란 한번의 url 요청으로 필요한 모든 데이터 요�
     const {ApolloServer, gql} = require("apollo-ser ver") // 이 방식에서 (여전히 사용 가능)
     import {ApolloServer, gql} from "apollo-server" // 이 방식으로 사용할 수 있게 된다
     ```
+</details>
+ <br/>
+ <hr/>
 
 # *Apollo-Server*
 Apollo server는 GraphQL을 해석하는 오픈소스 서버이다.
