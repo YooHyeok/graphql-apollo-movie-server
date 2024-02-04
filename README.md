@@ -331,3 +331,40 @@ query($tweetId: ID){
 }
 ```
 
+## Mutation Type
+POST request 기능으로 사용자가 보낸 data로 mutate하는 동작들을 모두 넣는다.   
+database, cache, server 등 backend를 mutate하는 동작들을 넣는다.    
+만약 사용자로부터 하여금 data를 보내게 해서 backend를 mutate하게 하고 싶거나,     
+혹은 업로드 하고 싶거나 database를 수정하고 cache를 지우고 logout기능을 작동하게 만들고 싶다면
+어떠한 것이든지 간에 그게 mutation한 것이라면 Mutation에 넣어줘야 한다.
+
+Query Type에 field를 만드는 것은 restAPI에서 GET Http method로 url을 만들고 노출시키는것과 같다.    
+Mutation Type에 field를 만드는것은 url을 노출시키고 POST Http method로 그것을 관리하는것과 같다.
+
+`수정/추가 Mutation`
+```graphql
+type Mutation {
+  postTweet(text: String, userId: ID): tweet 
+}
+```
+
+```graphql
+mutation ($text: String, $userId: ID) {
+  postTweet(text: $text, id: $userId) {
+    id
+    text
+  }
+}
+```
+`삭제 Mutation`
+```graphql
+type Mutation {
+  deleteTweet(text: String, userId: ID): Boolean #id에 해당하는 tweet을 삭제한 후 삭제 성공 여부를 반환한다.
+}
+```
+
+```graphql
+mutation ($text: String, $userId: ID) {
+  deleteTweet(userId: $userId)
+}
+```
