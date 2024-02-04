@@ -250,6 +250,48 @@ Query의 request 필드에 괄호를 지정하고 그 안에 argument 이름과 
 
 이렇게 하면 서버에서는 아래와 같이 출력해준다
 
-```typescript
+```graphql
 tweet(id: ID): Tweet
 ```
+
+완성된 샘플 query의 조회 문법은 아래와 같다.
+
+```graphql
+ # Query SDL
+type User {
+  id: ID
+  username: String 
+}
+
+type Tweet { 
+  id: ID
+  text: String
+  author: User
+}
+
+type Query { 
+  allTwwets: [Tweet] 
+  tweet(id: ID): Tweet
+}
+  
+ # Operation
+query($tweetId: ID){
+  allTwwets { # GET: /api/v1/tweets
+    text
+    id
+    author {
+      id
+      username
+    }
+  }
+  tweet(id: $tweetId) { # GET: /api/v1/tweet/:id
+    text
+    id
+    author {
+      id
+      username
+    }
+  }
+}
+```
+
