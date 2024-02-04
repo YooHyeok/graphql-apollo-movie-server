@@ -198,8 +198,44 @@ RestAPI를 GraphQL API로 바꿔주고 싶다면 server를 그렇게 많이 수�
 middleware를 추가해주기만 하면 된다.
 자체적인 studio로 graphQL api를 explore할 수 있게 해준다.
 graphQL API와 상호작용하는 grahpiQL와 비슷, 버튼도 더 많고 다크모드 등등을 지원한다
+```js
+const server = new ApolloServer({null})
+server.listen().then(({url}) => {
+  console.log(`Running on ${url}`)
+}) 
+```
+위와 같이 서버를 생성한다.
 
-## Root Type
+
+## GraphQL Scheme - SDL
+GraphQL 데이터를 조회하기 위해서는 먼저 조회할 데이터의 Scheme를 정의해 줘야 한다.
+
+```javascript
+const typeDefs = gql`
+
+`
+const server = new ApolloServer({typeDefs})
+server.listen().then(({url}) => {
+  console.log(`Running on ${url}`)
+}) 
+```
+위와같이 gpl`` 문법을 특정 변수에 저장해 ApolloServer에 저장한다.
+우리는 이를 SDL이라고 부른다.
+SDL은 Query Type을 필수로 요구한다.
+
+```js
+const typeDefs = gql`
+  type Query {
+  # 요청할 데이터(필드)
+    text: String
+  }
+`
+```
+type Query는 사용자가 원하는 request 대상이다.    
+type Query 안에 선언하는 필드들은 사용자가 조회하길 원하는 데이터들이고
+이를 RestApi URL로 표현하자면 *`GET /text`* 와 같다.
+
+## Root Type (type Query)
 Query, Mutation, Subscription 등이 있다.
 쿼리, 변경, 실시간 데이터를 처리하는데 사용된다.
 ```graphQL
