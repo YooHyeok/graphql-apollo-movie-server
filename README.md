@@ -656,3 +656,111 @@ query Mutation($addId: ID!, $text: String, $delId: ID!) {
   }
 }
 ```
+
+## Type Resolvers & Dynamic Fields
+
+```graphql
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    fullName: String!
+}
+type Query {
+    allUsers: [User!]!
+}
+```
+위와 같이 User타입에 fullName이라는 타입이 존재한다고 가정한다.
+
+그러나 우리의 Data목록에는 fullName타입이 존재하지 않는다.
+```js
+let users = [
+  {
+    id: "1",
+    firstName: "Yoo",
+    lastName: "Hyeok",
+  },
+  {
+    id: "2",
+    firstName: "Lee",
+    lastName: "Equals",
+  }
+]
+```
+```js
+const resolvers = {
+  Query: {
+    allUsers() {
+      return users
+    }
+  }
+}
+```
+만약 graphql을 통해 모든 users데이터를 조회하고 요청 필드에 fullName을 넣게되면 오류가 발생한다.
+
+```js
+query Query {
+  allUsers {
+    id
+    firstName
+    lastName
+    fullName // 여기서 오류가 발생함.
+  }
+}
+```
+
+SDL 상에는 존재하는 필드 이지만 조회하는 배열 내에 저장된 객체에 fullName 필드가 없기 때문이다.
+
+이때 사용할 수 있는 방법은 2가지이다.   
+ 1. data상에 선언해주기.
+ 2. type에 대한 resolver구현하기.
+
+ 1번의 로직은 아래와 같이 구현할 수 있다.
+
+ ```js
+ let users = [
+  {
+    id: "1",
+    firstName: "Yoo",
+    lastName: "Hyeok",
+    fullName: function() {
+      return this.firstName + " " + this.lastName
+    }
+  },
+  {
+    id: "2",
+    firstName: "Lee",
+    lastName: "Equals",
+    fullName: function() {
+      return this.firstName + " " + this.lastName
+    }  
+  }
+]
+ ```
+
+ 2번에 대한 로직은 아래와 같다.
+ ```js
+const resolvers = {
+  Query: {
+    allUsers() {
+      return users
+    }
+  },
+  /* fullName에 대한 type resolver */
+  User: {
+    fullName(root, arg) {
+      return root.firstName + " " + root.lastName
+    }
+  }
+}
+ ```
+
+ 위와 같이 선언하고 요청하면 grpahQL내부적으로 SDL에 정의된 fullName필드를 찾으러 다닌다.   
+ 우선 반환하는 데이터에 해당 필드가 존재하지 않으므로 User타입의 reslover를 찾아본다.   
+  User타입의 resolver가 존재하면 필드와 일치하는 이름의 resolver와 매핑시켜준다.   
+
+ 만약 반환하는 데이터에 해당 필드가 존재한다고 가정해보자   
+기본적인 순서상으로 필드를 매핑한 후(함수 형태라면 호출시키지 않고 대기함) resolver를 찾아본다.    
+resolver가 없으면 필드를 반영한다.    
+resolver가 존재하면 resolover에 root Argument로 현재 데이터에 매핑된 데이터들을 넘긴다.   
+최종적으로 resolver가 반환하는 값을 필드값으로 반영하게 된다.
