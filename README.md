@@ -567,3 +567,83 @@ resolver 함수는 datas 리스트 데이터를 반환하고 있다.
 GrpahQL쿼리에서 리스트 형태의 데이터를 반환하는 쿼리를 작성할 때는
 해당 리스트에 저장되는 객체 타입을 지정해줘야 한다.
 따라서 위와 같이 datas라는 함수명 이후 객체 블록을 선언해주고 해당 객체의 형태에 맞는 필드들을 나열해준다.
+
+#### argument를 무시할때는 파라미터 명을 _ 혹은 __로 처리한다.
+
+## Mutation Resolver
+
+데이터를 Mutation하는 예제를 아래 코드로 구현해본다.
+
+```js
+import {ApolloServer, gql} from "apollo-server"
+
+/**
+ * 임시 데이터
+*/
+const datas = [
+  {
+    id: "1",
+    text: "first one!",
+  },
+  {
+    id: "1",
+    text: "second one!",
+  }
+]
+
+const typeDefs = gpl`
+
+  type Data {
+    id: ID!
+    text: String!
+  }
+
+  type Mutation {
+    postData(id: ID!, text: String!): Data!
+  }
+`
+
+const resolvers = {
+  Mutation : {
+    postData(_, arg) {
+      const newData = {
+        id: datas.length + 1,
+        text: arg.text
+      }
+      datas.push(newData) /* 추가하고 */
+      return newData; /* 추가한 데이터만 반환 */
+    }
+
+  }
+}
+
+new ApolloServer({typeDefs, resolvers}).listen().then(({url}) => {
+  console.log(`Running on ${url}`)
+}) 
+
+```
+`[ GrpahQL Request & Response ]`
+```graphQL
+/* =============== Operation ================ */
+
+query Mutation($id: ID!, $text: String) {
+  postData(id: $id, text: $text) {
+    id
+    text
+  }
+}
+/* =============== Variables ================ */
+{
+  "id": "1",
+  "text": "메롱"
+}
+/* ================ Results ================= */
+{
+  "data": {
+    "postData": {
+      "id": "3",
+      "text": "메롱"
+    }
+  }
+}
+```
