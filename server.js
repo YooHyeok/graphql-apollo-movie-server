@@ -27,7 +27,7 @@ const typeDefs = gql`
   }
 
   type Mutation {
-    postTweet(text: String!, id: ID!): Tweet!
+    postTweet(text: String!, id: ID!, userId: ID!): Tweet!
     deleteTweet(id: ID!): Boolean!
   }
   
@@ -37,10 +37,12 @@ let tweets = [
   {
     id: "1",
     text: "first one!",
+    userId: "2"
   },
   {
     id: "2",
     text: "second one!",
+    userId: "1"
   }
 ]
 
@@ -86,19 +88,23 @@ const resolvers = {
 
   Mutation: {
     /**
-     * mutation Mutation($text: String!, $postTweetId: ID!, $deleteTweetId: ID!) {
+     * mutation Mutation($text: String!, $postTweetId: ID!, $userId: ID!) {
      *  postTweet(text: $text, id: $postTweetId) {
      *  id
      *  text
      * }
      */
     postTweet(_, arg) {
-      const newTweet = {id: tweets.length+1, text: arg.text}
+      
+      const findUser = users.find(user => user.id == arg.userId)
+      const result = users.includes(findUser)
+      if (!result) return false;
+      const newTweet = {id: tweets.length+1, text: arg.text, userId: arg.userId}
       tweets.push(newTweet)
       return newTweet
     },
     /**
-     * mutation Mutation($text: String!, $postTweetId: ID!, $deleteTweetId: ID!) {
+     * mutation Mutation($deleteTweetId: ID!) {
      *  deleteTweet(id: $deleteTweetId) 
      * }
      */
@@ -119,6 +125,11 @@ const resolvers = {
     fullName(root, arg) { // 동적 필드에 대한 resorver가 작동된다.
       console.log(root) // root에 User에 대한 데이터가 순차적으로 들어온다.
       return root.firstName + " " + root.lastName
+    }
+  },
+  Tweet: {
+    author(root, arg) {
+      return users.find(user=>user.id == root.userId);/* tweets Array의 tweet객체중 userId가 일치하는 userId를 검색 후 반환 */
     }
   }
 }
