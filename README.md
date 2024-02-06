@@ -375,3 +375,195 @@ mutation ($text: String, $userId: ID) {
   deleteTweet(userId: $userId)
 }
 ```
+
+## Non Nullable (Fields & Arguments)
+
+Fields 혹은 Arguments에 null을 허용해 주지 않는다.
+
+```graphQL
+  type Tweet { 
+    id: ID
+    text: String
+    author: User
+  }
+  type Query {
+    tweet(id: ID): Tweet
+  }
+```
+기본적으로 graphQL의 타입은 null을 허용해준다.
+
+```graphQL
+  type Tweet { 
+    id: ID|null
+    text: String|null
+    author: User|null
+  }
+  type Query {
+    tweet(id: ID|null): Tweet|null
+  }
+```
+
+만약 Field와 Argument를 null을 허용하지 않는 필수사항으로 설정하고 싶다면, 끝에 !느낌표를 추가한다.
+```graphQL
+  type Tweet {
+    id: ID!
+    text: String!
+    author: User!
+  }
+  type Query {
+    tweet(id: ID!): Tweet!
+  }
+```
+
+```graphQL
+query Tweet($tweetId: ID!) {
+  tweet {
+    id
+    text
+    author
+  }
+
+}
+```
+위와같이 tweet에 아무런 매개변수를 받지 않는다면 다음과 같은 오류가 발생한다.
+Field "tweet" argument "id" of type "ID!" is required, but it was not provided.
+
+```graphQL
+query Tweet($id: ID!) {
+  tweet(id: $id) {
+    id
+    text
+    author
+  }
+}
+```
+
+또한 argument가 아닌 field인 경우 해당 field를 항상 return할것이라는 뜻이다.
+null을 return하지 않는다고 확실히 하는 것이다.
+
+```graphQL
+  type Query {
+    allTweets1: [Tweet!]! # allTweet은 오직 null이 아닌 Tweet타입의 리스트를 필수로 반환한다.
+    allTweets2: [Tweet]! # allTweet은 null을 허용하는 Tweet타입 리스트를 필수로 반환한다.
+  }
+```
+
+## Query Resorvers
+resolver 함수는 데이터베이스에 액세스 한 다음 데이터를 반환한다.
+
+객체 형태로 기능 단위로 요청을 처리할 함수들을 정의하고, 정의한 함수 객체를 ApolloServer의 Object 타입 파라미터 2번째 속성에 적용한다.    
+이때 정의할 함수명은 GraphQL SDL에 정의한 type이름, 메소드명과 일치해야한다.
+
+```js
+import {ApolloServer, gql} from "apollo-server"
+
+const typeDefs = gpl`
+  type Query {
+    method(arg: type): 
+  }
+`
+const resolvers = {
+  Query : {
+    method(root, arg): {
+      /* 구현*/ 
+    }
+  }
+}
+
+new ApolloServer({typeDefs, resolvers}).listen().then(({url}) => {
+  console.log(`Running on ${url}`)
+}) 
+```
+
+아래와 같이 임시 데이터를 만들어서 간단하게 구현해본다.
+
+```js
+import {ApolloServer, gql} from "apollo-server"
+
+/**
+ * 임시 데이터
+*/
+const datas = [
+  {
+    id: "1",
+    text: "first one!",
+  },
+  {
+    id: "1",
+    text: "second one!",
+  }
+]
+
+const typeDefs = gpl`
+
+  type Data {
+    id: ID!
+    text: String!
+  }
+
+  type Query {
+    data(id: ID): Data
+    datas: [Data]!
+  }
+`
+
+const resolvers = {
+  Query : {
+    data(root, arg) {
+      return datas.find(data => data.id === arg.id)
+    },
+    datas() {
+      return datas
+    }
+
+  }
+}
+
+new ApolloServer({typeDefs, resolvers}).listen().then(({url}) => {
+  console.log(`Running on ${url}`)
+}) 
+
+```
+`[ GrpahQL Request & Response ]`
+```graphQL
+/* =============== Operation ================ */
+
+query Query($id: ID!) {
+  data(id: $id) {
+    id
+    text
+  }
+  datas {
+    id
+    text
+  }
+}
+/* =============== Variables ================ */
+{
+  "id": "1"
+}
+/* ================ Results ================= */
+{
+  "data": {
+    "data": {
+      "id": "1",
+      "text": "first one!"
+    },
+    "datas": [
+      {
+        "id": "1",
+        "text": "first one!"
+      },
+      {
+        "id": "1",
+        "text": "second one!"
+      }
+    ]
+  }
+}
+```
+SDL에서의 datas는 Data타입의 리스트 형태를 반환한다.
+resolver 함수는 datas 리스트 데이터를 반환하고 있다.
+GrpahQL쿼리에서 리스트 형태의 데이터를 반환하는 쿼리를 작성할 때는
+해당 리스트에 저장되는 객체 타입을 지정해줘야 한다.
+따라서 위와 같이 datas라는 함수명 이후 객체 블록을 선언해주고 해당 객체의 형태에 맞는 필드들을 나열해준다.
