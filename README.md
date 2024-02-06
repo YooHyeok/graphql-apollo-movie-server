@@ -764,3 +764,108 @@ const resolvers = {
 resolver가 없으면 필드를 반영한다.    
 resolver가 존재하면 resolover에 root Argument로 현재 데이터에 매핑된 데이터들을 넘긴다.   
 최종적으로 resolver가 반환하는 값을 필드값으로 반영하게 된다.
+
+
+### Type Relationships
+
+Type간 관계를 걸 수 있다.
+DataBase의 외래키와 비슷한 개념이다.
+
+```graphQL
+  type User { # 사용자 지정 타입으로 데이터베이스의 관계에 따라 결정된다.
+    id: ID!
+    firstName: String! # 이러한 타입을 ScalarType이라고 한다.
+    lastName: String!
+    fullName: String!
+  }
+
+  type Tweet { # allTweets이 반환하는 사용자 지정 type이다.
+    id: ID!
+    text: String!
+    author: User
+  }
+```
+
+위와 같이 SDL상으로 Tweet 하위에는 User데이터가 author라는 필드명으로 존재한다.
+
+```js
+let tweets = [
+  {
+    id: "1",
+    text: "first one!",
+    userId: "2" /* 기본 데이터에 User를 참조할 User의 ID를 함께 저장 */
+  },
+  {
+    id: "2",
+    text: "second one!",
+    userId: "1"
+  }
+]
+```
+간단하게 기본 data 리스트에 userId 필드를 추가해 주고
+
+```graphQL
+  type Mutation {
+    postTweet(text: String!, id: ID!, userId: ID!): Tweet!
+  }
+```
+Tweet 추가 Mutation resolver에서 userId를 받도록 Argument를 추가해준다.
+
+```js
+const resolvers = {
+  Mutation: {
+    /**
+     * Tweet 저장시 relation으로 묶일 User의 id인 userId값을 함께 저장해준다.
+     */
+    postTweet(_, arg) {
+      const findUser = users.find(user => user.id == arg.userId)
+      const result = users.includes(findUser)
+      if (!result) return false;
+      const newTweet = {id: tweets.length+1, text: arg.text, userId: arg.userId}
+      tweets.push(newTweet)
+      return newTweet
+    },
+  }
+
+  User: {
+    fullName(root, arg) {
+      return root.firstName + " " + root.lastName
+    }
+  },
+  /* author 필드에 대한 resolver 선언 */
+  Tweet: {
+    author(root, arg) {
+      return users.find(user=>user.id == root.userId);/* tweets Array의 tweet객체중 userId가 일치하는 userId를 검색 후 반환 */
+    }
+  }
+}
+```
+Mutation resolver에서 tweet 추가시 userId를 함께 추가할 수 있도록 처리해주고,     
+Tweet조회시 author에 대한 resolver를 추가해준다.  
+
+
+`graphQL 실행`
+```graphQL
+# ================== Operation ==================
+query Query($tweetId: ID!) {
+  tweet(id: $tweetId) {
+    id
+    text
+    author {
+      fullName
+    }
+  }
+}
+# ==================== Result ====================
+{
+  "data": {
+    "tweet": {
+      "id": "1",
+      "text": "first one!",
+      "author": {
+        "fullName": "Lee Equals"
+      }
+    },
+  }
+}
+```
