@@ -612,8 +612,14 @@ const resolvers = {
       }
       datas.push(newData) /* 추가하고 */
       return newData; /* 추가한 데이터만 반환 */
+    },
+    deleteData(_, arg) {
+      const isIncludes = datas.includes(data.find(data => data.id == arg.id));
+      if(!isIncludes) return false; /* 데이터가 없다면 false반환 */
+      datas = datas.filter(data => data.id != arg.id); /* 삭제하고 */
+      return true /* 삭제여부 반환 */
     }
-
+    
   }
 }
 
@@ -626,16 +632,18 @@ new ApolloServer({typeDefs, resolvers}).listen().then(({url}) => {
 ```graphQL
 /* =============== Operation ================ */
 
-query Mutation($id: ID!, $text: String) {
-  postData(id: $id, text: $text) {
+query Mutation($addId: ID!, $text: String, $delId: ID!) {
+  postData(id: $addId, text: $text) {
     id
     text
   }
+  deleteData(id: $delId)
 }
 /* =============== Variables ================ */
 {
-  "id": "1",
-  "text": "메롱"
+  "addId": "1",
+  "text": "메롱",
+  "delId": "2",
 }
 /* ================ Results ================= */
 {
@@ -644,6 +652,7 @@ query Mutation($id: ID!, $text: String) {
       "id": "3",
       "text": "메롱"
     }
+    "deleteData" : true
   }
 }
 ```
