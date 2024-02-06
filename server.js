@@ -8,7 +8,9 @@ const typeDefs = gql`
 
   type User { # 사용자 지정 타입으로 데이터베이스의 관계에 따라 결정된다.
     id: ID!
-    username: String! # 이러한 타입을 ScalarType이라고 한다.
+    firstName: String! # 이러한 타입을 ScalarType이라고 한다.
+    lastName: String!
+    fullName: String!
   }
 
   type Tweet { # allTweets이 반환하는 사용자 지정 type이다.
@@ -18,6 +20,7 @@ const typeDefs = gql`
   }
 
   type Query { # root type
+    allUsers: [User!]!
     allTweets: [Tweet!]! # Tweet 타입 형태의 List를 반환한다.
     tweet(id: ID!): Tweet
     ping: String!
@@ -41,6 +44,25 @@ let tweets = [
   }
 ]
 
+let users = [
+  {
+    id: "1",
+    firstName: "Yoo",
+    lastName: "Hyeok",
+    fullName: function() {
+      return this.firstName + " " + this.lastName
+    }
+  },
+  {
+    id: "2",
+    firstName: "Lee",
+    lastName: "Equals",
+    fullName: function() {
+      return this.firstName + " " + this.lastName
+    }  
+  }
+]
+
 /**
  * 타입 정의와 같은 형태를 가져야 한다.
  * SDL에서의 타입 이름과 객체 속성명이 같아야 하며
@@ -56,6 +78,9 @@ const resolvers = {
     },
     allTweets() {
       return tweets
+    },
+    allUsers() {
+      return users
     }
   },
 
@@ -84,6 +109,16 @@ const resolvers = {
       tweets = tweets.filter(tweet => tweet.id != arg.id);
       console.log(tweets)
       return true
+    }
+  },
+
+  /**
+   * 동적 Fields 값 적용을 위한 Type Resolver
+   */
+  User: {
+    fullName(root, arg) { // 동적 필드에 대한 resorver가 작동된다.
+      console.log(root) // root에 User에 대한 데이터가 순차적으로 들어온다.
+      return root.firstName + " " + root.lastName
     }
   }
 }
