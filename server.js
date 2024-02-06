@@ -30,13 +30,13 @@ const typeDefs = gql`
   
 `
 
-const tweets = [
+let tweets = [
   {
     id: "1",
     text: "first one!",
   },
   {
-    id: "1",
+    id: "2",
     text: "second one!",
   }
 ]
@@ -48,7 +48,7 @@ const tweets = [
  */
 const resolvers = {
   Query: {
-    tweet(root, arg) { // 두번째 매개변수가 서버를통해 사용자로부터 넘겨받을 요청 매개변수이다.
+    tweet(_, arg) { // 두번째 매개변수가 서버를통해 사용자로부터 넘겨받을 요청 매개변수이다.
       return tweets.find(tweet =>tweet.id === arg.id);
     },
     ping() {
@@ -56,6 +56,34 @@ const resolvers = {
     },
     allTweets() {
       return tweets
+    }
+  },
+
+  Mutation: {
+    /**
+     * mutation Mutation($text: String!, $postTweetId: ID!, $deleteTweetId: ID!) {
+     *  postTweet(text: $text, id: $postTweetId) {
+     *  id
+     *  text
+     * }
+     */
+    postTweet(_, arg) {
+      const newTweet = {id: tweets.length+1, text: arg.text}
+      tweets.push(newTweet)
+      return newTweet
+    },
+    /**
+     * mutation Mutation($text: String!, $postTweetId: ID!, $deleteTweetId: ID!) {
+     *  deleteTweet(id: $deleteTweetId) 
+     * }
+     */
+    deleteTweet(_, arg) {
+      const isIncludes = tweets.includes(tweets.find(tweet => tweet.id == arg.id));
+      console.log(isIncludes)
+      if(!isIncludes) return false;
+      tweets = tweets.filter(tweet => tweet.id != arg.id);
+      console.log(tweets)
+      return true
     }
   }
 }
