@@ -192,9 +192,10 @@ under-fetching이란 한번의 url 요청으로 필요한 모든 데이터 요�
  <hr/>
 
 # *Apollo-Server*
-Apollo server는 GraphQL을 해석하는 오픈소스 서버이다.
-GraphQL은 Specification(명세)일 뿐이고, 이것을 구현하기 위해서는 실제 코드를 작성해야 한다.
-그게 바로 Apollo server인것이다.
+Apollo server는 GraphQL을 해석하는 오픈소스 graphql client 서버이다.    
+(AraphiQL, Apollo GraphQL Studio, GraphQL playground, GraphQL client인 Altair)    
+GraphQL은 Specification(명세)일 뿐이고, 이것을 구현하기 위해서는 실제 코드를 작성해야 한다.   
+그게 바로 Apollo server인것이다.    
 Apollo server하나만 있어도 node.js server처럼 작동한다.
 
 만약 express, fastify, hapi, coap등 가지고 있는 어떤 node.js backend라도
