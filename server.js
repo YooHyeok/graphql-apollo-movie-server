@@ -10,15 +10,22 @@ const typeDefs = gql`
     id: ID!
     firstName: String! # 이러한 타입을 ScalarType이라고 한다.
     lastName: String!
+    """ 
+    Is the sum of firstName + lastName as a String
+     """
     fullName: String!
   }
 
+  """
+    Tweet Object represents a resources for a Tweet
+  """
   type Tweet { # allTweets이 반환하는 사용자 지정 type이다.
     id: ID!
     text: String!
     author: User
   }
 
+  
   type Query { # root type
     allUsers: [User!]!
     allTweets: [Tweet!]! # Tweet 타입 형태의 List를 반환한다.
@@ -28,6 +35,9 @@ const typeDefs = gql`
 
   type Mutation {
     postTweet(text: String!, id: ID!, userId: ID!): Tweet!
+    """ 
+    Deletes a Tweet if found, else returns false
+     """
     deleteTweet(id: ID!): Boolean!
   }
   
