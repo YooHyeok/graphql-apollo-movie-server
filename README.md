@@ -901,3 +901,13 @@ const typeDefs = gql`
 
 apollo api의 Documents 문서상의 Details 컬럼에 저장된다.    
 (다른 client에서는 다른 형태로 보여질 수 있음.)
+
+### Convert RestAPI To GraphQL
+
+1. 조회할 JSON데이터의 Key를 추출하여 커스텀으로 객체 타입과 해당 객체의 상세 필드 타입들을 정의한다.   
+2. 조회할 type Query를 정의한다.    
+3. 정의된 type Query를 resolver 객체에 메소드로 구현한다.   
+4. 각 resolver에 RestAPI URL 엔드포인트를 지정한다.   
+
+주의사항으로는 만약 리스트데이터와 단건데이터 조회시 동일한 객체 타입을 기준으로 조회하고,    
+리스트 조회시에는 존재하지만 단건조회시에는 존재하지 않는 필드의 경우는 필수요건(!)을 해제한다.
