@@ -205,6 +205,7 @@ RestAPI를 GraphQL API로 바꿔주고 싶다면 server를 그렇게 많이 수�
 middleware를 추가해주기만 하면 된다.
 자체적인 studio로 graphQL api를 explore할 수 있게 해준다.
 graphQL API와 상호작용하는 grahpiQL와 비슷, 버튼도 더 많고 다크모드 등등을 지원한다
+
 ```js
 const server = new ApolloServer({null})
 server.listen().then(({url}) => {
@@ -869,3 +870,34 @@ query Query($tweetId: ID!) {
   }
 }
 ```
+
+### Documentation
+AraphiQL, Apollo GraphQL Studio, GraphQL playground, GraphQL client인 Altair
+어떤 client서버를 쓰던지 documentation을 볼 수 있다.
+
+이때 내가 지정한 커스텀 Type Object의 설명을 상세하게 작성할 수 있다
+
+```js
+const typeDefs = gql`
+
+  """
+  Tweet Object represents a resources for a Tweet
+  """
+  type Tweet { # allTweets이 반환하는 사용자 지정 type이다.
+    id: ID!
+    text: String!
+    """
+    userId값을 넘겨받는 author resolver에 의해 참조가 가능해진다.
+    """
+    author: User
+  }
+
+`
+```
+
+위와같이 주석을 달고자 하는 type위에 `""" 주석내용 """` 을 입력해준다.    
+원한다면 모든 field에도 가능하다.   
+(각 필드 위에 똑같은 문법으로 적용한다.)
+
+apollo api의 Documents 문서상의 Details 컬럼에 저장된다.    
+(다른 client에서는 다른 형태로 보여질 수 있음.)
