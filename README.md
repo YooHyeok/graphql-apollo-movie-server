@@ -912,3 +912,62 @@ apollo api의 Documents 문서상의 Details 컬럼에 저장된다.
 
 주의사항으로는 만약 리스트데이터와 단건데이터 조회시 동일한 객체 타입을 기준으로 조회하고,    
 리스트 조회시에는 존재하지만 단건조회시에는 존재하지 않는 필드의 경우는 필수요건(!)을 해제한다.
+
+# GraphQL-Tools 스키마 병합
+
+loadFileSync와 loadFiles 2가지 방식이 있다.
+ESM방식(import)은 로딩 로직이 비동기 방식이기 때문에 loadFileSync대신 loadFiles 함수를 사용해야 한다.
+
+```js
+import { loadFilesSync, loadFiles  } from "@graphql-tools/load-files";
+import { mergeResolvers, mergeTypeDefs } from "@graphql-tools/merge";
+import { makeExecutableSchema } from "@graphql-tools/schema";
+
+import path from 'path';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+
+// const typeDefsArray = loadFilesSync(`${__dirname}/**/*.typeDefs.js`);
+// const resolversArray = loadFilesSync(`${__dirname}/**/*.resolver.js`);
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const typeDefsPath = path.join(
+    __dirname, '**/*.typeDefs.js'
+);
+const resolversPath = path.join(
+    __dirname, '**/*.resolver.js'
+);
+
+
+const typeDefsArray = await loadFiles(typeDefsPath, {
+    useRequire: true,
+    requireMethod: async (path) => {
+        console.debug('Using typeDefs at:', path);
+        return await import(pathToFileURL(path));
+    }
+});
+const resolversArray = await loadFiles(resolversPath, {
+    useRequire: true,
+    requireMethod: async (path) => {
+        console.debug('Using resolver at:', path);
+        return await import(pathToFileURL(path));
+    }
+});
+
+
+// typeDefs과 reolvers의 파일 정의(각 파일들의 추적에 사용)
+
+const mergedTypeDefs = mergeTypeDefs(typeDefsArray);
+const mergedResolvers = mergeResolvers(resolversArray);
+// 추적된 파일들을 통합
+console.log(mergedTypeDefs)
+const schema = makeExecutableSchema({
+  typeDefs: mergedTypeDefs,
+  resolvers: mergedResolvers,
+});
+// 추적된 파일들을 사용가능하도록 분류
+
+export default schema;
+```
