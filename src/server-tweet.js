@@ -105,7 +105,6 @@ const resolvers = {
      * }
      */
     postTweet(_, arg) {
-      
       const findUser = users.find(user => user.id == arg.userId)
       const result = users.includes(findUser)
       if (!result) return false;
@@ -120,7 +119,6 @@ const resolvers = {
      */
     deleteTweet(_, arg) {
       const isIncludes = tweets.includes(tweets.find(tweet => tweet.id == arg.id));
-      console.log(isIncludes)
       if(!isIncludes) return false;
       tweets = tweets.filter(tweet => tweet.id != arg.id);
       console.log(tweets)

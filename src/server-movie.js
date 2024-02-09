@@ -48,7 +48,6 @@ const typeDefs = gql`
  */
 const resolvers = {
   Query: {
-
     async allMovies() {
       return await fetch("https://yts.mx/api/v2/list_movies.json")
       .then(res=>res.json())
@@ -60,8 +59,6 @@ const resolvers = {
       .then(json=>json.data.movie);
     }
   },
-
-
 }
 
 const server = new ApolloServer({typeDefs, resolvers})
