@@ -6,8 +6,8 @@ const typeDefs = gql`
       id: Int!
       url: String!
       imdb_code: String!
-      title: String!
-      title_english: String!
+      title: String
+      title_english: String
       title_long: String!
       slug: String!
       year: Int!
@@ -22,7 +22,7 @@ const typeDefs = gql`
       background_image: String!
       background_image_original: String!
       small_cover_image: String!
-      medium_cover_image: String!
+      medium_cover_image: String
       large_cover_image: String!
   }
   
